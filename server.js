@@ -17,11 +17,9 @@ connection.connect((err) => {
 });
 
 const runSearch = () => {
-  console.log("Excelsior!");
-  console.log("Listening on port: " + connection.port);
+  console.log("Service started");
 };
 
-// ****************
 const initialQuestions = () => {
   inquirer
     .prompt({
@@ -47,28 +45,38 @@ const initialQuestions = () => {
     })
     .then((answer) => {
       switch (answer.action) {
-        case 'Find songs by artist':
-          artistSearch();
+        case 'View all employees':
+          viewAllEmployees();
           break;
 
-        case 'Find all artists who appear more than once':
-          multiSearch();
+        case 'View all employees by department':
+          viewAllEmployeesByDepartment();
           break;
 
-        case 'Find data within a specific range':
-          rangeSearch();
+        case 'View all employees by manager':
+          viewAllEmployeesByManager();
           break;
 
-        case 'Search for a specific song':
-          songSearch();
-          break;
-
-        case 'Find artists with a top song and top album in the same year':
-          songAndAlbumSearch();
-          break;
+// Add remaining cases
 
         default:
           console.log(`Invalid action: ${answer.action}`);
           break;
       }
     });
+
+  };
+
+
+  const viewAllEmployees = () => {
+    const query = 'SELECT * FROM employee';
+    connection.query(query, [], (err, res) => {
+      res.forEach(({ id, first_name, last_name, role_id, manager_id }) => {
+        console.log(
+          `ID: ${id} || First name: ${first_name} || Last name: ${last_name} || Role ID: ${role_id} || Manager ID: ${manager_id}`
+        );
+      });
+      initialQuestions();
+    });
+     
+  };
