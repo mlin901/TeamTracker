@@ -1,12 +1,10 @@
-// 12-MySQL/01-Activities/14-TwoTables/Solved/topSongsAndAlbumsCode.js   *******
-// *****More comments
-// ****Classes????? 
-
+// Dependencies
 const mysql = require('mysql');
 const inquirer = require('inquirer');
 require('console.table');
 require('dotenv').config();
 
+// Set up connection to MySQL database
 const connection = mysql.createConnection({
   host: 'localhost',
   port: 3306,  
@@ -15,12 +13,14 @@ const connection = mysql.createConnection({
   database: process.env.DB_NAME,
 });
 
+// App starting point (connect to MySQL database, print welcome, and start asking user for input)
 connection.connect((err) => {
   if (err) throw err;
   printWelcome();
   initialQuestions();
 });
 
+// FUNCTION getListsFromDb - Gets lists used in inquirer choices: employeeds, departments, and roles
 // The following use of map was adapted from code in github.com/acucunato/employee-tracker/blob/master/server.js.
 // And the following was used as a general SQL reference for queries in this and subsequent functions:
 //    https://github.com/mysqljs/mysql
@@ -45,6 +45,8 @@ const getListsFromDb = () => {
   });
 }
 
+// FUNCTION initialQuestions - Prompts user to select a course of action, 
+//    then calls a function based on user's selection
 const initialQuestions = () => {
   getListsFromDb();
   inquirer
@@ -124,6 +126,7 @@ const initialQuestions = () => {
     });
 };
 
+// FUNCTION - Displays a table with all data from employee databaser table
 const viewAllEmployees = () => {
   const query = 
     'SELECT * FROM employee';
@@ -134,6 +137,8 @@ const viewAllEmployees = () => {
   });
 };
 
+// FUNCTION - Displays a table with all data from the employee database table 
+//  with employees sorted by department
 const viewAllEmployeesByDepartment = () => {
   const query = 
     "SELECT employee.first_name, employee.last_name, department.name FROM employee JOIN role ON employee.role_id = role.id JOIN department ON role.department_id = department.id ORDER BY department.id";
@@ -144,7 +149,9 @@ const viewAllEmployeesByDepartment = () => {
   });
 };
 
-// Reference used for this join: https://www.mysqltutorial.org/mysql-self-join/
+// FUNCTION - Displays a table with all data from the employee database table
+//  with employees sorted by manager
+// Reference used for the following join: https://www.mysqltutorial.org/mysql-self-join/
 const viewAllEmployeesByManager = () => {
   const query = 
     "SELECT CONCAT(e.last_name, ', ', e.first_name) AS 'Employee (subordinate)', CONCAT(m.last_name, ', ', m.first_name) AS Manager FROM employee e INNER JOIN employee m ON m.id = e.manager_id ORDER BY Manager";
@@ -155,6 +162,7 @@ const viewAllEmployeesByManager = () => {
   });
 };
 
+// FUNCTION - Displays a table with all data from the department database table
 const viewDepartments = () => {
   const query = 
     'SELECT * FROM department';
@@ -165,6 +173,7 @@ const viewDepartments = () => {
   });
 };
 
+// FUNCTION - Displays a table with all data from the role database table
 const viewRoles = () => {
   const query = 
     'SELECT * FROM role';
@@ -175,6 +184,7 @@ const viewRoles = () => {
   });
 };
 
+// FUNCTION - Enables user to add an employee. Prompts user for employee information.
 const addEmployee = () => {
   inquirer
     .prompt([
@@ -213,7 +223,7 @@ const addEmployee = () => {
           first_name: answer.first_name,
           last_name: answer.last_name,
           role_id: answer.role,
-          manager_id: answer.manager_id   // ****make optional???
+          manager_id: answer.manager_id  
         },
          (err, res) => {
           console.log('\nEmployee deleted');
@@ -224,6 +234,7 @@ const addEmployee = () => {
   );
 }
 
+// FUNCTION - Enables user to add a department. Prompts user for department information.
 const addDepartment = () => {
   inquirer
     .prompt([
@@ -254,7 +265,7 @@ const addDepartment = () => {
   );
 }
 
-
+// FUNCTION - Enables user to add a role. Prompts user for role information.
 const addRole = () => {
   inquirer
     .prompt([
@@ -298,6 +309,7 @@ const addRole = () => {
   );
 }
 
+// FUNCTION - Enables user to delete an employee. Prompts user to choose an employee from a list of all employees.
 const removeEmployee = () => {
   inquirer
     .prompt([
@@ -318,6 +330,7 @@ const removeEmployee = () => {
     });
 }
 
+// FUNCTION - Enables user to delete a department. Prompts user to choose a department from a list of all departments.
 const removeDepartment = () => {
   inquirer
     .prompt([
@@ -338,6 +351,7 @@ const removeDepartment = () => {
     });
 }
 
+// FUNCTION - Enables user to delete a role. Prompts user to choose a role from a list of all roles.
 const removeRole = () => {
   inquirer
     .prompt([
@@ -358,6 +372,8 @@ const removeRole = () => {
     });
 }
 
+// FUNCTION - Enables user to change the role for an employee. Prompts user to choose an employee from a 
+// list of all employees and a new role from a list of all roles.
 const updateEmployeeRole = () => {
   inquirer
     .prompt([
@@ -389,6 +405,8 @@ const updateEmployeeRole = () => {
     });
 }
 
+// FUNCTION - Enables user to change an employee's manager. Prompts user to choose an employee from a 
+// list of all employees and a new manager from a list of all employees.
 const updateEmployeeManager = () => {
   inquirer
     .prompt([
@@ -420,6 +438,8 @@ const updateEmployeeManager = () => {
     });
 }
 
+// FUNCTION - Enables user to view the salary expenditure for a specified department. Prompts user to choose a department
+// from a list of all departments.
 const viewTotalBudget = () => {
   inquirer
     .prompt([
@@ -442,12 +462,14 @@ const viewTotalBudget = () => {
     });
 }
 
+// FUNCTION - Exits TeamTracker app, ending the connection to the MySQL database.
 function exitApp() {
   connection.end(function(err) {
     console.log('\nThank you for using TeamTracker!\nServer connection terminated.\n');
   });
 }
 
+// FUNCTION - Renders welcome screen in ASCII art.
 // The following was adapted from ASCII art generated by https://patorjk.com/software/taag/
 function printWelcome() {
   console.log(`\n\n\n
