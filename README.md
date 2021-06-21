@@ -64,4 +64,4 @@ For more information about the developer, see https://github.com/mlin901.
 
 ## Screenshot 
 
-![Note Taker application screen capture](./mjl_notetakerscreenshot.jpg) *******************!!!!!!
+![TeamTracker application screenshot](./resources/TeamTrackerScreenshot.jpg
